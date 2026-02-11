@@ -2498,7 +2498,65 @@ Matcher matcher = pattern.matcher("abc123");
 | `replaceAll()`      | 替换所有匹配到的部分                              |
 | `replaceFirst()`    | 只替换第一个匹配                                  |
 
-### 7.4 经典正则例子
+### 7.4 贪婪爬取/非贪婪爬取
+
+贪婪爬取：在爬取数据时尽可能多的获取数据
+
+非贪婪爬取：在爬取数据时尽可能少的获取数据
+
+* 只写`+`和`*`表示贪婪匹配
+* `+?`非贪婪匹配
+* `*?`非贪婪匹配
+
+java默认是贪婪爬取，但在数量词`+*`后加上`?`表示非贪婪爬取
+
+### 7.5 捕获分组和非捕获分组
+
+组号从1开始，连续不间断，以左括号为基准，最左边的是第一组
+
+**1.捕获分组**：后续还要继续使用本组的数据
+
+* `\\组号`：表示把第X组的内容再拿出来用一次（正则内部）
+
+* `$组号`：正则外部使用
+
+  ```java
+  // 将下面的字符串按规则替换为“我要学编程”
+  String str = "我要学学编编编编程程程程程程";
+      
+  String result = str.replaceAll("(.)\\1+", "$1");
+  ```
+
+举例1：只考虑一个`a123a`  `b456b`
+
+```java
+String regex1 = "(.).+\\1";
+```
+
+举例2：可以有多个字符`abc123abc`  `b456b`  `123789123`
+
+```java
+String regex2 = "(.+).+\\1"
+```
+
+举例3：开始部分内每个字符也需要一致`aaa123aaa`  `bbb456bbb`  `111789111`
+
+```java
+// (.)：把首字母看成一组
+// \\2：把首字母再拿出来使用（第二个括号）
+// *：作用于\\1，表示后面重复的内容出现0次或多次
+String regex3 = "((.)\\2*).+\\1"
+```
+
+**2.非捕获分组**：分组之后不再需要使用本组数据，仅仅是把数据括起来，**不占用组号**
+
+| 符号       | 含义                       | 举例              |
+| ---------- | -------------------------- | ----------------- |
+| `(?:正则)` | 获取所有                   | `Java(?:8|11|17)` |
+| `(?=正则)` | 获取前面部分               | `Java(?=8|11|17)` |
+| `(?!正则)` | 获取不是指定内容的前面部分 | `Java(?!8|11|17)` |
+
+### 7.6 经典正则例子
 
 | 场景                         | 正则表达式                                 |
 | ---------------------------- | ------------------------------------------ |
@@ -2511,23 +2569,9 @@ Matcher matcher = pattern.matcher("abc123");
 
 ## 8.爬虫
 
-简单来说，**爬****虫就是程序模拟浏览器向网站发送请求，抓取网页数据，然后提取你需要的内容（比如文字、图片、链接）**。
+简单来说，**爬虫就是程序模拟浏览器向网站发送请求，抓取网页数据，然后提取你需要的内容（比如文字、图片、链接）**。
 
 ### 8.1 扩展正则规则
-
-
-
-### 8.2 贪婪爬取/非贪婪爬取
-
-贪婪爬取：在爬取数据时尽可能多的获取数据
-
-非贪婪爬取：在爬取数据时尽可能少的获取数据
-
-* 只写`+`和`*`表示贪婪匹配
-* `+?`非贪婪匹配
-* `*?`非贪婪匹配
-
-java默认是贪婪爬取，但在数量词`+*`后加上`?`表示非贪婪爬取
 
 ### 8.3 爬虫基本步骤
 
@@ -2801,7 +2845,7 @@ public static void downloadFile(String fileUrl, String savePath) {
 
 ---
 
-## 8.jdk时间类
+## 9.jdk时间类
 
 > 全世界的时间，有一个统一的计算标准
 >
@@ -2809,7 +2853,7 @@ public static void downloadFile(String fileUrl, String savePath) {
 >
 > 中国标准时间：世界标准时间+8小时
 
-### 8.1 jdk7及之前的时间类
+### 9.1 jdk7及之前的时间类
 
 Date类是jdk写好的Javabean类，用来描述时间，精确到毫秒。
 
@@ -2839,7 +2883,7 @@ setTime(毫秒值);
 getTime();
 ```
 
-### 8.2 SimpleDateFormat类
+### 9.2 SimpleDateFormat类
 
 * 格式化：把时间变成我们喜欢的格式
 * 解析：把字符串表示的时间变成Date类
@@ -2870,7 +2914,7 @@ getTime();
 | a    | 上午/下午标记      | AM / PM       |
 | z    | 时区               | PST、GMT+8    |
 
-### 8.3 Calendar类
+### 9.3 Calendar类
 
 `Calendar` 是一个**抽象类**，用于处理时间的各个字段（年、月、日、时、分、秒等）的获取与设置，并支持日期的加减操作。
 
@@ -2904,7 +2948,7 @@ Calendar calendar = Calendar.getInstance();
 | `getTime()`                  | 获取对应的 `Date` 对象 |
 | `setTime(Date date)`         | 设置日期               |
 
-### 8.4 jdk8新增时间类
+### 9.4 jdk8新增时间类
 
 对比`Date`、`Calendar`、`SimpleDateFormat` 等类
 
@@ -2951,9 +2995,9 @@ Date类：
 
 ---
 
-## 9.包装类
+## 10.包装类
 
-**包装类（Wrapper Class）** 是 Java 为 **每个基本数据类型** 提供的 **类类型的封装版本**，让它们也可以像对象一样使用。
+**包装类（Wrapper Class）** 是 Java 为 **每个基本数据类型** 提供的 **类型的封装版本**，让它们也可以像对象一样使用。
 
 > ### 为什么需要包装类？
 >
@@ -2975,7 +3019,7 @@ Date类：
 >
 > - Java 会自动把 `int` 转成 `Integer`，也会自动反过来转换，这个叫“装箱”和“拆箱”
 
-### 9.1 Java中8个基本类型及对应包装类
+### 10.1 Java中8个基本类型及对应包装类
 
 | 基本类型（primitive） | 包装类（Wrapper）  |
 | --------------------- | ------------------ |
@@ -2988,7 +3032,7 @@ Date类：
 | `char`                | `Character`        |
 | `boolean`             | `Boolean`          |
 
-### 9.2 Integer
+### 10.2 Integer
 
 自动、手动装箱：
 
@@ -3055,7 +3099,7 @@ System.out.println(Integer.toHexString(10));    // "a"
 
 ---
 
-## 10.Arrays
+## 11.Arrays
 
 `java.util.Arrays` 是一个 **工具类**，用于**操作数组的常用方法**集合，比如：
 
@@ -3068,19 +3112,332 @@ System.out.println(Integer.toHexString(10));    // "a"
 
 它只服务于 Java 中的**数组类型（int[]、String[] 等）**，不是集合（比如 ArrayList）。
 
-### 10.1 常用方法
+### 11.1 常用方法
 
-| 方法名                            | 说明                        |
-| --------------------------------- | --------------------------- |
-| `Arrays.toString(array)`          | 打印一维数组                |
-| `Arrays.deepToString(array)`      | 打印多维数组                |
-| `Arrays.sort(array)`              | 排序                        |
-| `Arrays.copyOf(array, newLength)` | 复制数组                    |
-| `Arrays.equals(arr1, arr2)`       | 比较是否相等                |
-| `Arrays.fill(array, value)`       | 用值填充数组                |
-| `Arrays.binarySearch(array, key)` | 二分查找（必须先排序！）    |
-| `Arrays.asList(...)`              | 数组转列表（固定长度）      |
-| `Arrays.stream(array)`            | 数组转 Stream 流（Java 8+） |
+| 方法名                                          | 说明                           | 返回                                  |
+| ----------------------------------------------- | ------------------------------ | ------------------------------------- |
+| `Arrays.toString(array)`                        | 打印一维数组                   | 字符串                                |
+| `Arrays.deepToString(array)`                    | 打印多维数组                   |                                       |
+| `Arrays.sort(array)`                            | 排序（默认基本数据类型升序）   | void                                  |
+| `Arrays.copyOf(array, newLength)`               | 复制数组                       | 数组                                  |
+| `Arrays.copyOfRange(array, fromIndex, toIndex)` | 范围复制数组（包头不包尾）     | 数组                                  |
+| `Arrays.equals(arr1, arr2)`                     | 比较是否相等                   |                                       |
+| `Arrays.fill(array, value)`                     | 用值填充数组                   | void                                  |
+| `Arrays.binarySearch(array, key)`               | 二分查找（必须先排序，且升序） | 元素存在返回索引，不存在返回-插入点-1 |
+| `Arrays.asList(...)`                            | 数组转列表（固定长度）         |                                       |
+| `Arrays.stream(array)`                          | 数组转 Stream 流（Java 8+）    |                                       |
+
+关于重载方法`Arrays.sort(array, sortRule)`：
+
+* 根据排序规则排序，只能给引用数据类型，基本数据类型需要用包装类
+* 第二个参数是一个接口，在调用方法的时候需要传递这个接口的**实现类对象**，作为排序的规则，只使用一次，可使用匿名内部类的方式
+* 底层采用插入排序 + 二分查找方式进行排序
+
+比如：
+
+```java
+Arrays.sort(arr, new Comparator<Integer>() {
+    @Override
+    public int compare(Integer o1, Integer o2) {
+        return o1 - o2; // 升序
+        return o2 - o1; // 降序
+    }
+})
+```
+
+compare方法：
+参数一o1：表示在无需序列中，遍历得到的每一个元素
+
+参数二o2：有序序列中的元素
+
+返回值：
+
+负数：表示当前插入的元素是小的，放在前面
+
+正数/0：表示当前要插入的元素是大的/相等的，放后面
+
+---
+
+## 12.Lambda表达式
+
+### 12.1 Lambda表达式介绍
+
+函数式编程思想的体现，JDK8开始的新语法
+
+* 用来简化函数式接口的匿名内部类的书写
+* 只能简化**函数式接口**的匿名内部类的写法
+* 函数式接口：
+  * **有且仅有一个抽象方法**的接口叫做函数式接口，接口上方可以加`@FunctionalInterface`注解
+
+关心做什么而不是谁去做
+
+比如(11.1中的例子)：完整格式
+
+```java
+Arrays.sort(arr, (Integer o1, Integer o2) -> {
+        return o1 - o2; // 升序
+        return o2 - o1; // 降序
+    }
+);
+```
+
+### 12.2 Lambda表达式省略规则
+
+1. 参数类型可以省略不写
+
+   ```java
+   Arrays.sort(arr, (o1, o2) -> {
+           return o1 - o2; // 升序
+           return o2 - o1; // 降序
+       }
+   );
+   ```
+
+2. 如果只有一个参数，参数类型可以省略，同时()也可以省略
+
+   ```java
+   Arrays.sort(arr, o1 -> {
+       XXX
+       }
+   );
+   ```
+
+3. 如果Lambda表达式的方法体只有一行，大括号、分号、return可以省略不写，需要同时省略
+
+   ```java
+   Arrays.sort(arr, (o1, o2) -> o1 - o2); // 升序
+   
+   Arrays.sort(arr, (o1, o2) -> o2 - o1); // 降序
+   ```
+
+   
+
+---
+
+---
+
+# 常见算法
+
+## 1.查找
+
+### 1.1 二分查找
+
+前提条件：数组中的数据必须是**有序**的
+
+核心逻辑：每次排除一半的查找范围
+
+* min和max表示当前要查找的范围
+* mid是min和max中间的
+* 如果要查找的元素在mid的左边，缩小范围时，min不变，max等于mid-1
+* 如果要查找的元素在mid的右边，缩小范围时，max不变，min等于mid+1
+
+```java
+    public static int binarySearch(int[] arr, int number) {
+        int min = 0;
+        int max = arr.length - 1;
+
+        while (true) {
+            if (max < min) {
+                return -1;
+            }
+
+            int mid = (min + max) / 2;
+
+            if (arr[mid] == number) {
+                return mid;
+            } else if (arr[mid] < number) {
+                min = mid + 1;
+            } else {
+                max = mid - 1;
+            }
+        }
+    }
+```
+
+### 1.2  插值查找
+
+二分查找的改进
+
+```java
+mid = min + (key-arr[min]) / (arr[max] - arr[min]) * (max - min)
+```
+
+### 1.3 斐波那契查找
+
+```java
+mid = min + 黄金分割点左边长度 - 1
+```
+
+都是通过不断缩小范围进行查找
+
+不同点：mid的计算方式不同
+
+### 1.4 分块查找
+
+分块的原则1：前一块中的最大数据，小于后一块中所有的数据（块内无需，块间有序）
+
+分块的原则2：块数数量一般等于数字的个数开根号，比如：16个数字一般分为4块左右
+
+核心思路：先确定要查找的元素在哪一块，然后在块内挨个查找
+
+### 1.5 扩展的分块查找（无规律的数据）
+
+分块原则：块与块之间无交集
+
+---
+
+## 2.排序
+
+### 2.1 冒泡排序
+
+1. 相邻的数据两两比较，小的放前，大的放后
+2. 第一轮循环结束，最大值已经找到，在数组的最右边
+3. 第二轮循环只要在剩余的元素找到最大值即可
+4. 第二轮循环结束，次大值已经确定，第三轮循环继续在剩余数据中循环
+
+```java
+    private static void bubbleSort(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = 0; j < arr.length - 1 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    // 交换
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+    }
+```
+
+### 2.2 选择排序
+
+从0索引开始，拿着每一个索引上的元素跟后面的元素依次比较，小的放前面，大的放后面，以此类推
+
+1. 从0索引开始，跟后面的元素一一比较
+2. 小的放前面，大的放后面
+3. 第一轮循环结束后，最小的数据已经确定
+4. 第二轮循环从1索引开始以此类推
+
+```java
+    private static void selectionSort(int[] arr2) {
+        for (int i = 0; i < arr2.length - 1; i++) {
+            for (int j = i + 1; j < arr2.length; j++) {
+                if (arr2[i] > arr2[j]) {
+                    // 交换
+                    int temp = arr2[i];
+                    arr2[i] = arr2[j];
+                    arr2[j] = temp;
+                }
+            }
+        }
+    }
+```
+
+### 2.3 插入排序
+
+将0索引的元素到N索引的元素看作是有序的，把N+1索引的元素到最后一个当成是无序的。便利无序的数据，将遍历到的元素插入有序序列中适当的位置，如遇到相同数据，插在后面。
+
+N的范围：0~最大索引
+
+```java
+    private static void insertionSort(int[] arr) {
+        // 1.找到无序的那一组数据是从哪个位置开始的
+        int startIndex = -1;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > arr[i + 1]) {
+                startIndex = i + 1;
+                break;
+            }
+        }
+
+        // 2.便利从startIndex开始到数组末尾的每一个元素
+        for (int i = startIndex; i < arr.length; i++) {
+            int j = i;
+
+            // 3.将当前元素插入到前面已经排序好的数组中
+            while (j > 0 && arr[j] < arr[j - 1]) {
+                // 移动元素
+                int temp = arr[j];
+                arr[j] = arr[j - 1];
+                arr[j - 1] = temp;
+                j--;
+            }
+        }
+    }
+```
+
+> ## 递归算法
+>
+> ### 递归算法概念
+>
+> 递归是指方法中调用方法本身的现象
+>
+> 递归一定要有出口，否则就会出现内存溢出
+>
+> ### 递归算法的作用
+>
+> 把一个复杂的问题层次转化为一个与原问题相似的规模较小的问题来求解
+>
+> 递归策略只需少量的程序就可描述出解题过程所需要的多次重复计算
+>
+> ### 递归算法两个核心
+>
+> * 找出口：什么时候不再调用方法
+> * 找规则：如何把大问题变成规模较小的问题
+
+### 2.4 快速排序
+
+第一轮：把0索引的数字作为基准数，确定基准数在数组中正确的位置。比基准数小的全部在左边，比基准数大的全部在右边
+
+后面以此类推
+
+```java
+    /**
+     * 参数1：要排序的数组
+     * 参数2：排序的起始位置
+     * 参数3：排序的结束位置
+     * @param arr
+     */
+    private static void quickSort(int[] arr, int i, int j) {
+        int start = i;
+        int end = j;
+
+        // 递归出口
+        if (start >= end) {
+            return;
+        }
+
+        // 记录基准数
+        int baseNumber = arr[i];
+
+        while (start != end) {
+            // 从右往左找比baseNumber小的数
+            while (end > start && arr[end] >= baseNumber) {
+                end--;
+            }
+            // 从左往右找比baseNumber大的数
+            while (start < end && arr[start] <= baseNumber) {
+                start++;
+            }
+            // 交换两个数
+            if (start < end) {
+                int temp = arr[start];
+                arr[start] = arr[end];
+                arr[end] = temp;
+            }
+        }
+
+        // 将基准数放到正确的位置
+        arr[i] = arr[start];
+        arr[start] = baseNumber;
+
+        // 递归处理左边的子数组
+        quickSort(arr, i, start - 1);
+        // 递归处理右边的子数组
+        quickSort(arr, end + 1, j);
+    }
+```
 
 ---
 
@@ -3121,22 +3478,38 @@ java.util
 └── Collections / Arrays（工具类）
 ```
 
-Collection中的通用方法：
+### 1.2 Collection中的通用方法：
 
-| 方法                 | 用途 & 备注                             |
-| -------------------- | --------------------------------------- |
-| `add(E e)`           | 添加元素，基本的增操作                  |
-| `remove(Object o)`   | 删除指定元素                            |
-| `contains(Object o)` | 判断集合是否包含指定元素，查找用        |
-| `size()`             | 返回集合元素个数                        |
-| `isEmpty()`          | 判断集合是否为空                        |
-| `iterator()`         | 返回迭代器，用于遍历集合（支持增强for） |
-| `clear()`            | 清空集合                                |
-| `toArray()`          | 转成数组，方便和数组交互                |
+Collection是单列集合的顶层接口，所有方法被List和Set系列集合共享
 
-### 1.2 Collection遍历
+| 方法                 | 用途 & 备注                                               |
+| -------------------- | --------------------------------------------------------- |
+| `add(E e)`           | 添加元素，基本的增操作                                    |
+| `remove(Object o)`   | 删除指定元素                                              |
+| `contains(Object o)` | 判断集合是否包含指定元素，查找用，需要o重写`equals()`方法 |
+| `size()`             | 返回集合元素个数                                          |
+| `isEmpty()`          | 判断集合是否为空                                          |
+| `iterator()`         | 返回迭代器，用于遍历集合（支持增强for）                   |
+| `clear()`            | 清空集合                                                  |
+| `toArray()`          | 转成数组，方便和数组交互                                  |
 
-1. 迭代器遍历
+## 2.Collection遍历
+
+### 2.1 迭代器遍历（可删除）
+
+迭代器在Java中的类是Iterator，迭代器是集合专用的遍历方式
+
+Collection集合获取迭代器
+
+| 方法名称                | 说明                                    |
+| ----------------------- | --------------------------------------- |
+| `Iteator<E> iterator()` | 返回迭代器对象，默认指向当前集合的0索引 |
+
+Iterator中的常用方法
+| 方法名称            | 说明                                                      |
+| ------------------- | --------------------------------------------------------- |
+| `boolean hasNext()` | 判断当前位置是否有元素，有元素返回true，没有元素返回false |
+| `E next()`          | 获取当前位置的元素，并将迭代器对象移向下一个位置          |
 
 ```java
 Iterator<E> iterator = collection.iterator();创建指针
@@ -3153,7 +3526,9 @@ while (iterator.hasNext()) {   // 当前是否有元素
 * 循环中只能用一次next方法
 * 迭代器遍历时不能用集合的方法进行增加或删除，若要删除，需使用迭代器的remove方法，但无添加方法
 
-2. **增强for循环**
+### 2.2 增强for循环（只遍历）
+
+修改for中的变量，**不会改变**集合中原本的数据
 
 ```java
 for (E element : collection) {
@@ -3161,39 +3536,116 @@ for (E element : collection) {
 }
 ```
 
-3. Lambda表达式遍历
+### 2.3 Lambda表达式遍历（只遍历）
+
+原匿名内部类写法：
+```java
+Collection<String> coll = new ArrayList<>();
+...
+coll.forEach(new Consumer<String>() {
+    @Override
+    // s表示集合中的每一个数据
+    public void accept(String s) {
+        ...
+    }
+})
+```
+
+Lambda改法：
 
 ```java
 collection.forEach(element -> System.out.println(element));
 ```
 
-### 1.3 List集合
+## 3.List集合
 
-特有方法：
+### 3.1 特有方法
 
-| 方法名                           | 说明                               |
-| -------------------------------- | ---------------------------------- |
-| `void add(int index, E element)` | 在此集合中的指定位置插入指定的元素 |
-| `E remove(int index)`            | 删除，返回删除的元素               |
-| `E set(int index, E element)`    | 修改，返回被修改的元素             |
-| `E get(int index)`               | 返回指定索引处的元素               |
+* Collection的方法List都继承了
+* List集合有索引，多了很多索引操作的方法
 
-list集合的遍历方式：
+| 方法名                           | 说明                                                         |
+| -------------------------------- | ------------------------------------------------------------ |
+| `void add(int index, E element)` | 在此集合中的指定位置插入指定的元素，原索引位置上的元素依次往后移 |
+| `E remove(int index)`            | 删除，返回删除的元素                                         |
+| `E set(int index, E element)`    | 修改，返回被修改的元素                                       |
+| `E get(int index)`               | 返回指定索引处的元素                                         |
 
-* 迭代器
+> ## 关于删除的注意
+>
+> 调用方法时，如果方法出现了重载现象，优先调用实参跟形参类型一致的那个方法
+>
+> ```java
+> List<Integer> list = new ArrayList<>();
+> 
+> list.add(1);
+> list.add(2);
+> list.add(3);
+> 
+> list.remove(1);// 根据索引删除
+> ```
+
+### 3.2 list集合的遍历方式：
+
+* 迭代器（`listIterator()`）
+  * 额外添加了一个方法，在遍历的过程中，可以添加元素
 * 列表迭代器（基础上添加了add方法、previous方法）
 * 增强for
 * lambda表达式遍历
-* 普通for循环
+* 普通for循环（因为List有索引）
 
-### 1.4 ArrayList
+> ## 数据结构（简）
+>
+> ### 1.栈
+>
+> 特点：先进后出，后进先出
+>
+> ### 2.队列
+>
+> 特点：先进先出，后进后出
+>
+> ### 3.数组
+>
+> 特点：
+>
+> * **查询速度快**：通过地址值和索引定位，查询任意数据耗时相同（元素在内存中是连续存储的
+> * 删除效率低：要将原始数据删除，同时后面的每个数据前移
+> * 添加效率极低：添加位置后的每个数据后移，再添加元素
+>
+> ### 4.链表
+>
+> 链表中的结点都是独立的对象，在内存中是不连续的，每个结点包含数据值和下一个结点的地址
+>
+> 特点：
+>
+> * 链表查询慢，无论查询哪个数据都要从头开始找
+> * 链表**增删快**
+>
+> 包括单链表和双向链表
+
+### 3.3 ArrayList
+
+底层原理：
 
 * 利用空参构造创建的集合，在底层创建一个默认长度为0的数组
 * 添加第一个元素时，底层会创建一个新的长度为10的数组
 * 存满时，会扩容1.5倍
 * 若一次添加多个元素，1.5倍还放不下，则新创建数组的长度以实际为准
 
-### 1.5 泛型类
+### 3.4 LinkedList
+
+底层数据结构是双链表，查询慢，首尾操作速度极快，所以多了很多首尾操作的特有API
+
+| 特有方法                    | 说明                             |
+| --------------------------- | -------------------------------- |
+| `public void addFirst(E e)` | 在该列表开头插入指定的元素       |
+| `public void addLast(E e)`  | 将指定的元素追加到此列表的末尾   |
+| `public E getFirst()`       | 返回此列表中的第一个元素         |
+| `public E getLast()`        | 返回此列表中的最后一个元素       |
+| `public E removeFirst()`    | 从此列表中删除并返回第一个元素   |
+| `public E removeLast()`     | 从此列表中删除并返回最后一个元素 |
+
+### 3.5 泛型类
 
 泛型是JDK5中引入的特性，可以在编译阶段约束操作的数据类型，并进行检查
 
