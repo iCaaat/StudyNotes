@@ -3645,13 +3645,15 @@ collection.forEach(element -> System.out.println(element));
 | `public E removeFirst()`    | 从此列表中删除并返回第一个元素   |
 | `public E removeLast()`     | 从此列表中删除并返回最后一个元素 |
 
-### 3.5 泛型类
+## 4.泛型类
+
+### 4.1 泛型类基本介绍
 
 泛型是JDK5中引入的特性，可以在编译阶段约束操作的数据类型，并进行检查
 
 格式：`<数据类型>`
 
-注意：只能支持引用数据类型
+注意：只能支持**引用数据类型**
 
 使用场景：
 
@@ -3659,51 +3661,55 @@ collection.forEach(element -> System.out.println(element));
 
 细节：
 
-* 泛型中不能写基本数据类型
+* 泛型中不能写基本数据类型，基本数据类型需要使用其**包装类**
 * 指定泛型的具体类型后，传递数据时，可以传入该类型或者其子类类型
 * 如果不写泛型，类型默认是Object
 
-定义地方：
+### 4.2 泛型的使用
 
-* 类后面：泛型类
+**类后面：泛型类**
 
-  * 场景：当一个类中，某个变量的数据类型不确定时，就可以定义带有泛型的类
+* 场景：当一个类中，某个变量的数据类型不确定时，就可以定义带有泛型的类
 
-  * ```java
-    public class ArrayList<E> { }
-    ```
+* ```java
+  public class ArrayList<E> { }
+  ```
 
-  * 此处E可理解为变量，但是不是用来记录数据的，而是记录数据的类型，也可写成T、V等
+* 此处E可理解为变量，但是不是用来记录数据的，而是记录数据的类型，也可写成T、V等
 
-* 方法上：
+**方法上：泛型方法**
 
-  * 只能在本方法中使用
+* 场景：方法中形参类型不确定时
 
-  * ```java
-    public <T> void show(T t) { }
-    ```
+* 方案一：使用类名后面定义的泛型——所有的方法都能使用
 
-* 接口上：
+* 方案二：在方法声明上自己的泛型——只有本方法能使用
 
-  * ```java
-    public interface List<E> { }
-    ```
+* ```java
+  public <T> void show(T t) { }
+  ```
 
-  * 使用方式一：实现类给出具体的类型
+**接口上：泛型接口**
 
-  * ```java
-    public class MyArrayList implements List<String> { }
-    ```
+* ```java
+  public interface List<E> { }
+  ```
 
-  * 使用方式二：实现类也不确定，创建对象时给出类型
+* 使用方式一：实现类给出具体的类型
 
-  * ```java
-    public class MyArrayList implements Lsit<E> {}
-    
-    MyArrayList<String> list = new MyArrayList<>()
-    ```
+* ```java
+  public class MyArrayList implements List<String> { }
+  ```
 
-**泛型的继承和通配符：**
+* 使用方式二：实现类也不确定，创建对象时给出类型
+
+* ```java
+  public class MyArrayList<E> implements Lsit<E> {}
+  
+  MyArrayList<String> list = new MyArrayList<>()
+  ```
+
+### 4.3 泛型的继承和通配符：
 
 场景：
 
@@ -3723,6 +3729,8 @@ collection.forEach(element -> System.out.println(element));
 ```java
 public static void keepPet(ArrayList<? extends Cat> list) { }
 ```
+
+## 5.Set集合
 
 ### 1.6 HashSet集合
 
